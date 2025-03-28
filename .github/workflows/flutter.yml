@@ -1,0 +1,129 @@
+name: Flutter build and release
+on:
+  workflow_dispatch:
+
+jobs:
+  release-tag:
+    name: Fetch release tag
+    runs-on: ubuntu-latest
+    outputs:
+      latest-tag: ${{ steps.release-tag.outputs.LATEST_TAG }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get Latest Release Tag
+        id: release-tag
+        run: |
+          LATEST_TAG_V=$(git ls-remote --tags --refs --sort=-v:refname https://github.com/doordeck/doordeck-headless-sdk.git | awk -F'/' '{print $3}' | sed 's/\^{}//' | sort -V | tail -n1)
+          LATEST_TAG=${LATEST_TAG_V#v}
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_OUTPUT
+          echo $LATEST_TAG
+
+  flutter-version:
+    name: Parse Flutter's version
+    runs-on: ubuntu-latest
+    outputs:
+      flutter-version: ${{ steps.flutter-version.outputs.FLUTTER_VERSION }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract Flutter version from FVM config
+        id: flutter-version
+        run: |
+          FLUTTER_VERSION=$(jq -r .flutterSdkVersion .fvm/fvm_config.json)
+          echo "flutter-version=$FLUTTER_VERSION" >> "$GITHUB_OUTPUT"
+
+
+  build-android:
+    needs: [release-tag, flutter-version]
+    runs-on: ubuntu-latest
+    env:
+      DOORDECK_SDK_VERSION: ${{ needs.release-tag.outputs.latest-tag }}
+      FLUTTER_VERSION: ${{ needs.flutter-version.outputs.flutter-version }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+
+      - name: Get into the Example project
+        run: cd example
+
+      - name: Analyze Dart code
+        run: flutter analyze
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build for Android
+        run: flutter build apk --debug
+
+
+  build-ios:
+    needs: release-tag
+    runs-on: macos-latest
+    env:
+      DOORDECK_SDK_VERSION: ${{ needs.release-tag.outputs.latest-tag }}
+      FLUTTER_VERSION: ${{ needs.flutter-version.outputs.flutter-version }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+
+      - name: Get into the Example project
+        run: cd example
+
+      - name: Analyze Dart code
+        run: flutter analyze
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Install pods
+        run: |
+          cd ios
+          pod install
+          cd ..
+
+      - name: Build for iOS
+        run: flutter build ios --simulator
+
+  publish-pub:
+    needs: [release-tag, flutter-version, build-android, build-ios]
+    env:
+      DOORDECK_SDK_VERSION: ${{ needs.release-tag.outputs.latest-tag }}
+      FLUTTER_VERSION: ${{ needs.flutter-version.outputs.flutter-version }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set SDK version in pubspec.yaml
+        run: |
+          sed -i "s/^version: .*/version: $DOORDECK_SDK_VERSION/" pubspec.yaml
+        env:
+          DOORDECK_SDK_VERSION: ${{ env.DOORDECK_SDK_VERSION }}
+
+      - name: Configure pub.dev credentials
+        run: |
+          mkdir -p ~/.pub-cache
+          echo "${{ secrets.PUB_DEV_CREDENTIALS }}" > ~/.pub-cache/credentials.json
+
+      - name: Publish to pub
+        run: |
+          dart pub publish --dry-run
