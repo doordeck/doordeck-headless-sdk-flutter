@@ -1,0 +1,35 @@
+PODS:
+  - doordeck_headless_sdk_flutter (0.0.0):
+    - DoordeckSDK (~> 0.84)
+    - Flutter
+  - DoordeckSDK (0.84.0)
+  - Flutter (1.0.0)
+  - integration_test (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - doordeck_headless_sdk_flutter (from `.symlinks/plugins/doordeck_headless_sdk_flutter/ios`)
+  - Flutter (from `Flutter`)
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
+
+SPEC REPOS:
+  trunk:
+    - DoordeckSDK
+
+EXTERNAL SOURCES:
+  doordeck_headless_sdk_flutter:
+    :path: ".symlinks/plugins/doordeck_headless_sdk_flutter/ios"
+  Flutter:
+    :path: Flutter
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
+
+SPEC CHECKSUMS:
+  doordeck_headless_sdk_flutter: acf9c65dad0cd3cc116fb9fdc295cfef84f65128
+  DoordeckSDK: 0cd91a78d83f5b470d13d21b7e2775f9fb14a421
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
+
+PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
+
+COCOAPODS: 1.16.2
