@@ -60,17 +60,20 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
 
-      - name: Get into the Example project
-        run: cd example
-
       - name: Analyze Dart code
-        run: flutter analyze
+        run: |
+          cd example
+          flutter analyze
 
       - name: Get dependencies
-        run: flutter pub get
+        run: |
+          cd example
+          flutter pub get
 
       - name: Build for Android
-        run: flutter build apk --debug
+        run: |
+          cd example
+          flutter build apk --debug
 
 
   build-ios:
@@ -89,23 +92,25 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
 
-      - name: Get into the Example project
-        run: cd example
-
       - name: Analyze Dart code
-        run: flutter analyze
+        run: |
+          cd example
+          flutter analyze
 
       - name: Get dependencies
-        run: flutter pub get
+        run: |
+          cd example
+          flutter pub get
 
       - name: Install pods
         run: |
-          cd ios
+          cd example/ios
           pod install
-          cd ..
 
       - name: Build for iOS
-        run: flutter build ios --simulator
+        run: |
+          cd example/ios
+          flutter build ios --simulator
 
   publish-pub:
     needs: [release-tag, flutter-version, build-android, build-ios]
