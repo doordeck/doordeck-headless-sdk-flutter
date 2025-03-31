@@ -36,7 +36,7 @@ jobs:
       - name: Extract Flutter version from FVM config
         id: flutter-version
         run: |
-          FLUTTER_VERSION=$(jq -r .flutterSdkVersion .fvm/fvm_config.json)
+          FLUTTER_VERSION=$(jq -r .flutter .fvmrc)
           echo "flutter-version=$FLUTTER_VERSION" >> "$GITHUB_OUTPUT"
 
 
@@ -56,17 +56,20 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
 
-      - name: Get into the Example project
-        run: cd example
-
       - name: Analyze Dart code
-        run: flutter analyze
+        run: |
+          cd example
+          flutter analyze
 
       - name: Get dependencies
-        run: flutter pub get
+        run: |
+          cd example
+          flutter pub get
 
       - name: Build for Android
-        run: flutter build apk --debug
+        run: |
+          cd example
+          flutter build apk --debug
 
 
   build-ios:
@@ -85,23 +88,21 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
 
-      - name: Get into the Example project
-        run: cd example
+      - name: Get Flutter dependencies
+        run: flutter pub get
 
       - name: Analyze Dart code
         run: flutter analyze
 
-      - name: Get dependencies
-        run: flutter pub get
-
       - name: Install pods
         run: |
-          cd ios
+          cd example/ios
           pod install
-          cd ..
 
-      - name: Build for iOS
-        run: flutter build ios --simulator
+      - name: Build for iOS (simulator)
+        run: |
+          cd example
+          flutter build ios --simulator
 
   publish-pub:
     needs: [release-tag, flutter-version, build-android, build-ios]
@@ -112,6 +113,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
 
       - name: Set SDK version in pubspec.yaml
         run: |
@@ -126,4 +133,4 @@ jobs:
 
       - name: Publish to pub
         run: |
-          dart pub publish --dry-run
+          dart pub publish --force

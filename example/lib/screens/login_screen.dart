@@ -17,7 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   String? error;
 
-  Future<void> _handleLogin() async {
+  Future<void> _handleLogin(BuildContext context) async {
     setState(() {
       error = null;
     });
@@ -31,7 +31,9 @@ class _LoginScreenState extends State<LoginScreen> {
           error = "Requires verification";
         });
       } else {
-        Navigator.pop(context);
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
       }
     } catch (e) {
       setState(() => error = e.toString());
@@ -59,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 decoration: inputDecoration('Password'),
                 obscureText: true,
               ),
-              ElevatedButton(onPressed: _handleLogin, child: const Text('Submit')),
+              ElevatedButton(onPressed: () => _handleLogin(context), child: const Text('Submit')),
               if (error != null) Text(error!, style: errorTextStyle),
             ],
           ),

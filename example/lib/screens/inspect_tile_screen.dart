@@ -57,17 +57,17 @@ class _InspectTileScreenState extends State<InspectTileScreen> {
 
   Widget _buildList(List<String> deviceIds) {
     return Padding(
-      padding: EdgeInsetsDirectional.symmetric(vertical: 20),
+      padding: const EdgeInsetsDirectional.symmetric(vertical: 20),
       child: Column(
         children: [
-          Text("DEVICES:"),
+          const Text("DEVICES:"),
           Column(
             children: deviceIds
                 .map(
                   (e) => ListTile(
                     title: Text(
                       e,
-                      style: TextStyle(fontSize: 13),
+                      style: const TextStyle(fontSize: 13),
                     ),
                     trailing: const Icon(Icons.copy),
                     onTap: () {
