@@ -37,7 +37,7 @@ class _UnlockDeviceScreenState extends State<UnlockDeviceScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Unlock Device')),
       body: Padding(
-        padding: EdgeInsetsDirectional.symmetric(horizontal: 12),
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: 12),
         child: SingleChildScrollView(
           child: Column(
             children: [

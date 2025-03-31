@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../styles/styles.dart';
 import '../utils/api_client.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -20,9 +19,14 @@ class HomeScreen extends StatelessWidget {
             ElevatedButton(onPressed: () => Navigator.pushNamed(context, '/inspect-tile'), child: const Text('Inspect Tile')),
             ElevatedButton(onPressed: () => Navigator.pushNamed(context, '/unlock-device'), child: const Text('Unlock Device')),
             ElevatedButton(
-              onPressed: () async {
-                await ApiClient.logout();
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Logged out')));
+              onPressed: () {
+                ApiClient.logout().whenComplete(
+                  () {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Logged out')));
+                    }
+                  },
+                );
               },
               child: const Text('Logout'),
             ),

@@ -41,7 +41,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('User Details')),
       body: SingleChildScrollView(
-        padding: EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 20),
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 20),
         child: loading
             ? const Center(child: CircularProgressIndicator())
             : error != null
