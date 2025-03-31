@@ -1,0 +1,15 @@
+example/
+build/
+android/gradlew
+android/gradlew.bat
+android/gradle/
+android/*.kts
+android/*.gradle
+
+.idea/
+.vscode/
+
+.dart_tool/
+.packages
+
+test/

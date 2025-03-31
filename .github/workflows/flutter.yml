@@ -137,4 +137,4 @@ jobs:
 
       - name: Publish to pub
         run: |
-          dart pub publish --dry-run
+          dart pub publish
