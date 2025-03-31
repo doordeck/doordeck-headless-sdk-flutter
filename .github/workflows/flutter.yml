@@ -92,6 +92,11 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
 
+      - name: Get dependencies
+        run: |
+          cd example
+          flutter pub get
+
       - name: Analyze Dart code
         run: |
           cd example
@@ -101,11 +106,6 @@ jobs:
         run: |
           cd example/ios
           pod install
-
-      - name: Get dependencies
-        run: |
-          cd example
-          flutter pub get
 
       - name: Build for iOS
         run: |
