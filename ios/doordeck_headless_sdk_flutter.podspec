@@ -6,6 +6,8 @@ Pod::Spec.new do |s|
   s.name             = 'doordeck_headless_sdk_flutter'
   s.version          = '0.0.0'
   s.summary          = 'Doordeck SDK Headless Flutter'
+  s.license          = { :file => '../LICENSE' }
+  s.author           = { 'Doordeck' => 'developers@doordeck.com' }
   s.description      = <<-DESC
 A new Flutter plugin project.
                        DESC
