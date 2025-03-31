@@ -118,6 +118,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+
       - name: Set SDK version in pubspec.yaml
         run: |
           sed -i "s/^version: .*/version: $DOORDECK_SDK_VERSION/" pubspec.yaml
