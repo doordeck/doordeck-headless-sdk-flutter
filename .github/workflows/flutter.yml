@@ -1,10 +1,6 @@
 name: Flutter build and release
-#on:
-#  workflow_dispatch:
 on:
-  push:
-    branches:
-      - feature/fix-ci
+  workflow_dispatch:
 
 jobs:
   release-tag:
@@ -137,4 +133,4 @@ jobs:
 
       - name: Publish to pub
         run: |
-          dart pub publish
+          dart pub publish --force
