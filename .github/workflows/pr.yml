@@ -20,7 +20,7 @@ jobs:
           echo "FLUTTER_VERSION=$FLUTTER_VERSION" >> $GITHUB_OUTPUT
 
   build-android:
-    needs: [flutter-version]
+    needs: [ flutter-version ]
     runs-on: ubuntu-latest
     env:
       FLUTTER_VERSION: ${{ needs.flutter-version.outputs.flutter-version }}
@@ -33,6 +33,11 @@ jobs:
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
+
+      - name: Analyze Dart code
+        run: |
+          cd example
+          flutter analyze
 
       - name: Get Dependencies
         run: |
@@ -71,7 +76,5 @@ jobs:
 
       - name: Build for iOS (simulator)
         run: |
-          # Optional: Add this line to verify the config is still enabled before building
-          flutter config
           cd example
           flutter build ios --simulator
