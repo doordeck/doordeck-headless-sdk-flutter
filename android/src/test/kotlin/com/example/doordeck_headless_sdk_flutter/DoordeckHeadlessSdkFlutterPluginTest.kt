@@ -1,4 +1,4 @@
-package com.doordeck.doordeck_headless_sdk_flutter
+package com.doordeck.doordeckHeadlessSdkFlutter
 
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel

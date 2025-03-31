@@ -1,4 +1,4 @@
-package com.doordeck.doordeck_headless_sdk_flutter
+package com.doordeck.doordeckHeadlessSdkFlutter
 
 import com.doordeck.multiplatform.sdk.ApplicationContext
 import com.doordeck.multiplatform.sdk.Doordeck

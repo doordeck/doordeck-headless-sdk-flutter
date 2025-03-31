@@ -1,4 +1,4 @@
-package com.doordeck.doordeck_headless_sdk_flutter_example
+package com.doordeck.doordeckHeadlessSdkFlutterExample
 
 import io.flutter.embedding.android.FlutterActivity
 

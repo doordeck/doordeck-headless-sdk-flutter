@@ -16,9 +16,9 @@ public final class GeneratedPluginRegistrant {
   private static final String TAG = "GeneratedPluginRegistrant";
   public static void registerWith(@NonNull FlutterEngine flutterEngine) {
     try {
-      flutterEngine.getPlugins().add(new com.doordeck.doordeck_headless_sdk_flutter.DoordeckHeadlessSdkFlutterPlugin());
+      flutterEngine.getPlugins().add(new com.doordeck.doordeckHeadlessSdkFlutter.DoordeckHeadlessSdkFlutterPlugin());
     } catch (Exception e) {
-      Log.e(TAG, "Error registering plugin doordeck_headless_sdk_flutter, com.doordeck.doordeck_headless_sdk_flutter.DoordeckHeadlessSdkFlutterPlugin", e);
+      Log.e(TAG, "Error registering plugin doordeck_headless_sdk_flutter, com.doordeck.doordeckHeadlessSdkFlutter.DoordeckHeadlessSdkFlutterPlugin", e);
     }
     try {
       flutterEngine.getPlugins().add(new dev.flutter.plugins.integration_test.IntegrationTestPlugin());
