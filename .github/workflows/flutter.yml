@@ -97,19 +97,19 @@ jobs:
           cd example
           flutter analyze
 
-      - name: Get dependencies
-        run: |
-          cd example
-          flutter pub get
-
       - name: Install pods
         run: |
           cd example/ios
           pod install
 
+      - name: Get dependencies
+        run: |
+          cd example
+          flutter pub get
+
       - name: Build for iOS
         run: |
-          cd example/ios
+          cd example
           flutter build ios --simulator
 
   publish-pub:
