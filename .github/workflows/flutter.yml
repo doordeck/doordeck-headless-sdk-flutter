@@ -1,6 +1,10 @@
 name: Flutter build and release
+#on:
+#  workflow_dispatch:
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - feature/fix-ci
 
 jobs:
   release-tag:
@@ -36,7 +40,7 @@ jobs:
       - name: Extract Flutter version from FVM config
         id: flutter-version
         run: |
-          FLUTTER_VERSION=$(jq -r .flutterSdkVersion .fvm/fvm_config.json)
+          FLUTTER_VERSION=$(jq -r .flutter .fvmrc)
           echo "flutter-version=$FLUTTER_VERSION" >> "$GITHUB_OUTPUT"
 
 
