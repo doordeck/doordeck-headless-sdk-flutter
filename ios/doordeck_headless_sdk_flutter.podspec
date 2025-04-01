@@ -18,7 +18,7 @@ A new Flutter plugin project.
   s.dependency 'Flutter'
   s.platform = :ios, '15.6'
 
-  doordeck_sdk_version = ENV['DOORDECK_SDK_VERSION'] || '0.84'
+  doordeck_sdk_version = '0.86'
   s.dependency "DoordeckSDK", "~> #{doordeck_sdk_version}"
 
   # Flutter.framework does not contain a i386 slice.
