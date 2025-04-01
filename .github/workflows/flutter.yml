@@ -105,6 +105,8 @@ jobs:
           flutter build ios --simulator
 
   publish-pub:
+    permissions:
+      id-token: write
     needs: [release-tag, flutter-version, build-android, build-ios]
     env:
       DOORDECK_SDK_VERSION: ${{ needs.release-tag.outputs.latest-tag }}
@@ -120,16 +122,15 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
 
+      - name: Install dependencies
+        run: |
+          flutter pub get
+
       - name: Set SDK version in pubspec.yaml
         run: |
           sed -i "s/^version: .*/version: $DOORDECK_SDK_VERSION/" pubspec.yaml
         env:
           DOORDECK_SDK_VERSION: ${{ env.DOORDECK_SDK_VERSION }}
-
-      - name: Configure pub.dev credentials
-        run: |
-          mkdir -p ~/.pub-cache
-          echo "${{ secrets.PUB_DEV_CREDENTIALS }}" > ~/.pub-cache/credentials.json
 
       - name: Publish to pub
         run: |
