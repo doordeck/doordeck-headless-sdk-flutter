@@ -11,7 +11,7 @@ buildscript {
 
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val doordeckSdkVersion = System.getenv("DOORDECK_SDK_VERSION") ?: "0.84.0"
+val doordeckSdkVersion = "0.86.0"
 
 plugins {
     id("com.android.library")

@@ -1,0 +1,82 @@
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  flutter-version:
+    name: Parse Flutter's version
+    runs-on: ubuntu-latest
+    outputs:
+      flutter-version: ${{ steps.flutter-version.outputs.FLUTTER_VERSION }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract Flutter version
+        id: flutter-version
+        run: |
+          FLUTTER_VERSION=$(jq -r .flutter .fvmrc)
+          echo "FLUTTER_VERSION=$FLUTTER_VERSION" >> $GITHUB_OUTPUT
+
+  build-android:
+    needs: [flutter-version]
+    runs-on: ubuntu-latest
+    env:
+      FLUTTER_VERSION: ${{ needs.flutter-version.outputs.flutter-version }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+
+      - name: Analyze Dart code
+        run: |
+          cd example
+          flutter analyze
+
+      - name: Get dependencies
+        run: |
+          cd example
+          flutter pub get
+
+      - name: Build for Android
+        run: |
+          cd example
+          flutter build apk --debug
+  
+
+  build-ios:
+    needs: [flutter-version]
+    runs-on: macos-latest
+    env:
+      FLUTTER_VERSION: ${{ needs.flutter-version.outputs.flutter-version }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Analyze Dart code
+        run: flutter analyze
+
+      - name: Install pods
+        run: |
+          cd example/ios
+          pod install
+
+      - name: Build for iOS (simulator)
+        run: |
+          cd example
+          flutter build ios --simulator
