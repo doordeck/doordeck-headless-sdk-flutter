@@ -116,15 +116,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+
       - name: Install Dart SDK
         uses: dart-lang/setup-dart@v1
 
       - name: Set SDK version in pubspec.yaml
         run: |
           sed -i "s/^version: .*/version: $DOORDECK_SDK_VERSION/" pubspec.yaml
-        env:
-          DOORDECK_SDK_VERSION: ${{ env.DOORDECK_SDK_VERSION }}
 
-      - name: Publish to pub
-        run: |
-          dart pub publish --force
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Publish to pub.dev
+        run: dart pub publish --force
