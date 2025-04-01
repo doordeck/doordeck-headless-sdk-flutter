@@ -1,0 +1,44 @@
+name: Publish to pub.dev
+on:
+  push:
+    tags:
+      - 'v*' # Triggered mainly by workflow_dispatch on [flutter.yml]
+
+jobs:
+  publish-pub:
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+      - name: Extract version from tag
+        id: extract
+        run: echo "TAG_VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Parse Flutter version
+        id: flutter-version
+        run: |
+          FLUTTER_VERSION=$(jq -r .flutter .fvmrc)
+          echo "FLUTTER_VERSION=$FLUTTER_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.flutter-version.outputs.FLUTTER_VERSION }}
+          channel: stable
+
+      - name: Install Dart SDK
+        uses: dart-lang/setup-dart@v1
+
+      - name: Set SDK version in pubspec.yaml
+        run: |
+          sed -i "s/^version: .*/version: ${{ steps.extract.outputs.TAG_VERSION }}/" pubspec.yaml
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Publish to pub.dev
+        run: dart pub publish --force

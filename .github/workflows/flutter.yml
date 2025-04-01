@@ -1,4 +1,4 @@
-name: Flutter build and release
+name: Flutter build and create tag
 on:
   workflow_dispatch:
 
@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       latest-tag: ${{ steps.release-tag.outputs.LATEST_TAG }}
-
+      tag-exists: ${{ steps.check-tag.outputs.TAG_EXISTS }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,28 +21,41 @@ jobs:
           LATEST_TAG_V=$(git ls-remote --tags --refs --sort=-v:refname https://github.com/doordeck/doordeck-headless-sdk.git | awk -F'/' '{print $3}' | sed 's/\^{}//' | sort -V | tail -n1)
           LATEST_TAG=${LATEST_TAG_V#v}
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_OUTPUT
-          echo $LATEST_TAG
+          echo "LATEST_TAG=$LATEST_TAG"
+
+      - name: Check if tag exists in current repo
+        id: check-tag
+        run: |
+          TAG_EXISTS=$(git tag -l "v${{ steps.release-tag.outputs.LATEST_TAG }}")
+          if [ -z "$TAG_EXISTS" ]; then
+            echo "TAG_EXISTS=false" >> $GITHUB_OUTPUT
+          else
+            echo "Tag already exists: v${{ steps.release-tag.outputs.LATEST_TAG }}"
+            echo "TAG_EXISTS=true" >> $GITHUB_OUTPUT
+          fi
 
   flutter-version:
     name: Parse Flutter's version
     runs-on: ubuntu-latest
+    needs: release-tag
+    if: needs.release-tag.outputs.tag-exists == 'false'
     outputs:
       flutter-version: ${{ steps.flutter-version.outputs.FLUTTER_VERSION }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Extract Flutter version from FVM config
+      - name: Extract Flutter version
         id: flutter-version
         run: |
           FLUTTER_VERSION=$(jq -r .flutter .fvmrc)
-          echo "flutter-version=$FLUTTER_VERSION" >> "$GITHUB_OUTPUT"
+          echo "FLUTTER_VERSION=$FLUTTER_VERSION" >> $GITHUB_OUTPUT
 
 
   build-android:
     needs: [release-tag, flutter-version]
     runs-on: ubuntu-latest
+    if: needs.release-tag.outputs.tag-exists == 'false'
     env:
       DOORDECK_SDK_VERSION: ${{ needs.release-tag.outputs.latest-tag }}
       FLUTTER_VERSION: ${{ needs.flutter-version.outputs.flutter-version }}
@@ -73,8 +86,9 @@ jobs:
 
 
   build-ios:
-    needs: release-tag
+    needs: [release-tag, flutter-version]
     runs-on: macos-latest
+    if: needs.release-tag.outputs.tag-exists == 'false'
     env:
       DOORDECK_SDK_VERSION: ${{ needs.release-tag.outputs.latest-tag }}
       FLUTTER_VERSION: ${{ needs.flutter-version.outputs.flutter-version }}
@@ -104,33 +118,20 @@ jobs:
           cd example
           flutter build ios --simulator
 
-  publish-pub:
-    permissions:
-      id-token: write
-    needs: [release-tag, flutter-version, build-android, build-ios]
-    env:
-      DOORDECK_SDK_VERSION: ${{ needs.release-tag.outputs.latest-tag }}
-      FLUTTER_VERSION: ${{ needs.flutter-version.outputs.flutter-version }}
+  tag-release:
+    name: Create tag
+    needs: [release-tag, build-android, build-ios]
+    if: needs.release-tag.outputs.tag-exists == 'false'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Install Flutter
-        uses: subosito/flutter-action@v2
         with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: stable
+          fetch-depth: 0
 
-      - name: Install Dart SDK
-        uses: dart-lang/setup-dart@v1
-
-      - name: Set SDK version in pubspec.yaml
+      - name: Create Git tag
         run: |
-          sed -i "s/^version: .*/version: $DOORDECK_SDK_VERSION/" pubspec.yaml
-
-      - name: Get dependencies
-        run: flutter pub get
-
-      - name: Publish to pub.dev
-        run: dart pub publish --force
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag v${{ needs.release-tag.outputs.latest-tag }}
+          git push origin v${{ needs.release-tag.outputs.latest-tag }}
