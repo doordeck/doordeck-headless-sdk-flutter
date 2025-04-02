@@ -29,9 +29,7 @@ import 'package:doordeck_headless_sdk_flutter/doordeck_headless_sdk_flutter.dart
 ## Authentication Methods
 
 #### `login(String email, String password)`
-Logs the user in with their email and password.
-
-> **Note:** If login is performed without verification within the same session, authentication will only persist in runtime memory and will be lost when the app restarts.
+Logs the user in with their email and password. It will be kept in persistent storage.
 
 ```dart
 await DoordeckFlutter.login("user@example.com", "password123");
@@ -40,9 +38,7 @@ await DoordeckFlutter.login("user@example.com", "password123");
 ---
 
 #### `setAuthToken(String authToken)`
-Sets an authentication token manually.
-
-> **Note:** Like login, authentication without verification will only persist in runtime memory and will be lost after the app restarts.
+Sets an authentication token manually. It will be kept in persistent storage.
 
 ```dart
 await DoordeckFlutter.setAuthToken("your-auth-token");
@@ -60,7 +56,7 @@ await DoordeckFlutter.verify("123456");
 ---
 
 #### `logout()`
-Logs out the current user and clears the stored authentication context, including removing the persistent user ID.
+Logs out the current user and clears the stored authentication context, including removing the persistent storage for any info.
 
 ```dart
 await DoordeckFlutter.logout();
