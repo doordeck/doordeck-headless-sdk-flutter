@@ -37,6 +37,7 @@ jobs:
       - name: Get Dependencies
         run: |
           cd example
+          flutter config --no-enable-swift-package-manager
           flutter pub get
 
       - name: Build for Android
@@ -61,8 +62,8 @@ jobs:
 
       - name: Get Dependencies
         run: |
-          flutter config --enable-swift-package-manager
           cd example
+          flutter config --enable-swift-package-manager
           flutter pub get
 
       - name: Analyze Dart code
