@@ -71,11 +71,6 @@ jobs:
       - name: Analyze Dart code
         run: flutter analyze
 
-      - name: Install pods
-        run: |
-          cd example/ios
-          pod install
-
       - name: Build for iOS (simulator)
         run: |
           cd example
