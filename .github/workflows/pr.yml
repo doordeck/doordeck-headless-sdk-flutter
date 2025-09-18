@@ -42,8 +42,9 @@ jobs:
           cd example
           flutter analyze
 
-      - name: Get dependencies
+      - name: Configure and Get Dependencies
         run: |
+          flutter config --enable-swift-package-manager
           cd example
           flutter pub get
 
@@ -54,7 +55,7 @@ jobs:
   
 
   build-ios:
-    needs: [flutter-version]
+    needs: [ flutter-version ]
     runs-on: macos-latest
     env:
       FLUTTER_VERSION: ${{ needs.flutter-version.outputs.flutter-version }}
@@ -68,11 +69,9 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
 
-      - name: Enable Swift Package Manager
-        run: flutter config --enable-swift-package-manager
-
-      - name: Get Flutter dependencies
+      - name: Configure and Get Dependencies
         run: |
+          flutter config --enable-swift-package-manager
           cd example
           flutter pub get
 
@@ -81,5 +80,7 @@ jobs:
 
       - name: Build for iOS (simulator)
         run: |
+          # Optional: Add this line to verify the config is still enabled before building
+          flutter config
           cd example
           flutter build ios --simulator
