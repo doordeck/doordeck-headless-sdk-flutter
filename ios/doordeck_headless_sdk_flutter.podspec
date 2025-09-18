@@ -14,12 +14,12 @@ A new Flutter plugin project.
   s.homepage         = 'http://example.com'
   s.license          = { :file => '../LICENSE' }
   s.source       = { :git => "https://github.com/doordeck/doordeck-headless-sdk-react-native.git", :tag => "#{s.version}" }
-  s.source_files = 'Classes/**/*'
+  s.source_files = 'doordeck_headless_sdk_flutter/Sources/doordeck_headless_sdk_flutter/**/*'
   s.dependency 'Flutter'
   s.platform = :ios, '15.6'
 
   doordeck_sdk_version = '0.86'
-  s.dependency "DoordeckSDK", "~> #{doordeck_sdk_version}"
+#   s.dependency "DoordeckSDK", "~> #{doordeck_sdk_version}"
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }

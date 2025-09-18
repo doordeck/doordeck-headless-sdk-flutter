@@ -1,79 +1,67 @@
-import 'package:doordeck_headless_sdk_flutter/models/assisted_register_ephemeral_key_response.dart';
-import 'package:doordeck_headless_sdk_flutter/models/tile_locks_response.dart';
-import 'package:doordeck_headless_sdk_flutter/models/user_details_response.dart';
+import 'package:doordeck_headless_sdk_flutter/doordeck_headless_sdk_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import 'doordeck_headless_sdk_flutter_platform_interface.dart';
 
+/// The method channel implementation of [DoordeckHeadlessSdkFlutterPlatform].
+///
+/// This class handles communication with the native iOS/Android code.
 class MethodChannelDoordeckHeadlessSdkFlutter extends DoordeckHeadlessSdkFlutterPlatform {
+  /// The method channel used to interact with the native platform.
   @visibleForTesting
   final methodChannel = const MethodChannel('doordeck_headless_sdk_flutter');
 
-  @override
-  Future<AssistedRegisterEphemeralKeyResponse> login(
-      String email, String password) async {
-    final result = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
-      'login',
-      {
-        'email': email,
-        'password': password,
-      },
-    );
+  /// The callback function provided by the user to refresh the auth token.
+  AuthTokenCallback? _authTokenCallback;
 
-    return AssistedRegisterEphemeralKeyResponse.fromMap(
-        Map<String, dynamic>.from(result!));
+  MethodChannelDoordeckHeadlessSdkFlutter() {
+    methodChannel.setMethodCallHandler(_handleMethod);
   }
 
   @override
-  Future<AssistedRegisterEphemeralKeyResponse> setAuthToken(
-      String authToken) async {
-    final result = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
-      'setAuthToken',
-      {'authToken': authToken},
-    );
+  void setAuthTokenCallback(AuthTokenCallback callback) {
+    _authTokenCallback = callback;
+  }
 
-    return AssistedRegisterEphemeralKeyResponse.fromMap(
-        Map<String, dynamic>.from(result!));
+  /// Handles incoming method calls from the native side.
+  Future<dynamic> _handleMethod(MethodCall call) async {
+    switch (call.method) {
+      case 'requiresNewAuthToken':
+        if (_authTokenCallback != null) {
+          try {
+            final String? newAuthToken = await _authTokenCallback!();
+            return newAuthToken;
+          } catch (e) {
+            debugPrint('AuthTokenCallback failed: $e');
+            return null;
+          }
+        } else {
+          debugPrint("Warning: Native code requires a new auth token, but no AuthTokenCallback was set.");
+          return null;
+        }
+      default:
+        throw MissingPluginException('Not implemented: ${call.method}');
+    }
   }
 
   @override
-  Future<UserDetailsResponse> getUserDetails() async {
-    final result = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
-      'getUserDetails',
-    );
-
-    return UserDetailsResponse.fromMap(Map<String, dynamic>.from(result!));
+  Future<void> unlockFlow() async {
+    try {
+      await methodChannel.invokeMethod('unlockFlow');
+    } on PlatformException catch (e) {
+      debugPrint("Failed to invoke 'unlockFlow': ${e.message}");
+      rethrow;
+    }
   }
 
   @override
-  Future<void> verify(String code) async {
-    await methodChannel.invokeMethod<void>(
-      'verify',
-      {'code': code},
-    );
-  }
-
-  @override
-  Future<void> logout() async {
-    await methodChannel.invokeMethod<void>('logout');
-  }
-
-  @override
-  Future<TileLocksResponse> getLocksBelongingToTile(String tileId) async {
-    final result = await methodChannel.invokeMethod<Map<dynamic, dynamic>>(
-      'getLocksBelongingToTile',
-      {'tileId': tileId},
-    );
-
-    return TileLocksResponse.fromMap(Map<String, dynamic>.from(result!));
-  }
-
-  @override
-  Future<void> unlockDevice(String lockId) async {
-    await methodChannel.invokeMethod<void>(
-      'unlockDevice',
-      {'lockId': lockId},
-    );
+  Future<void> initialize({String? authToken}) async {
+    try {
+      await methodChannel.invokeMethod('initialize', {'authToken': authToken});
+    } on PlatformException catch (e) {
+      debugPrint("Failed to invoke 'initialize': ${e.message}");
+      rethrow;
+    }
   }
 }
