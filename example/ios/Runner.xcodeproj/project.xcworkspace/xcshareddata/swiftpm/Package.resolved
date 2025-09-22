@@ -1,0 +1,24 @@
+{
+  "originHash" : "6fe87cf1e4a5311f39d9140498b4eab1515d0ce4767610891ec5fe2c9d7fea12",
+  "pins" : [
+    {
+      "identity" : "doordeck-headless-sdk-spm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/doordeck/doordeck-headless-sdk-spm",
+      "state" : {
+        "revision" : "b558ee60e9ab3157881516cbc6d11147ceee05a4",
+        "version" : "1.65.0"
+      }
+    },
+    {
+      "identity" : "doordeck-ios-sdk-beta",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/doordeck/doordeck-ios-sdk-beta.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "1127f857bbae0ae822f73f503059c0021e7bb771"
+      }
+    }
+  ],
+  "version" : 3
+}

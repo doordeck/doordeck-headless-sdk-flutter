@@ -20,7 +20,7 @@ jobs:
           echo "FLUTTER_VERSION=$FLUTTER_VERSION" >> $GITHUB_OUTPUT
 
   build-android:
-    needs: [flutter-version]
+    needs: [ flutter-version ]
     runs-on: ubuntu-latest
     env:
       FLUTTER_VERSION: ${{ needs.flutter-version.outputs.flutter-version }}
@@ -39,19 +39,19 @@ jobs:
           cd example
           flutter analyze
 
-      - name: Get dependencies
+      - name: Get Dependencies
         run: |
           cd example
+          flutter config --no-enable-swift-package-manager
           flutter pub get
 
       - name: Build for Android
         run: |
           cd example
           flutter build apk --debug
-  
 
   build-ios:
-    needs: [flutter-version]
+    needs: [ flutter-version ]
     runs-on: macos-latest
     env:
       FLUTTER_VERSION: ${{ needs.flutter-version.outputs.flutter-version }}
@@ -65,16 +65,14 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
 
-      - name: Get Flutter dependencies
-        run: flutter pub get
+      - name: Get Dependencies
+        run: |
+          cd example
+          flutter config --enable-swift-package-manager
+          flutter pub get
 
       - name: Analyze Dart code
         run: flutter analyze
-
-      - name: Install pods
-        run: |
-          cd example/ios
-          pod install
 
       - name: Build for iOS (simulator)
         run: |

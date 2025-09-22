@@ -1,11 +1,14 @@
-import 'package:doordeck_headless_sdk_flutter/models/assisted_register_ephemeral_key_response.dart';
-import 'package:doordeck_headless_sdk_flutter/models/tile_locks_response.dart';
-import 'package:doordeck_headless_sdk_flutter/models/user_details_response.dart';
+import 'package:doordeck_headless_sdk_flutter/doordeck_headless_sdk_flutter.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'doordeck_headless_sdk_flutter_method_channel.dart';
 
+/// The abstract platform interface that defines the contract for platform-specific implementations.
+///
+/// This class uses the `plugin_platform_interface` package to ensure that platform
+/// implementations are verified at runtime.
 abstract class DoordeckHeadlessSdkFlutterPlatform extends PlatformInterface {
+  /// Constructs a DoordeckHeadlessSdkFlutterPlatform.
   DoordeckHeadlessSdkFlutterPlatform() : super(token: _token);
 
   static final Object _token = Object();
@@ -16,50 +19,25 @@ abstract class DoordeckHeadlessSdkFlutterPlatform extends PlatformInterface {
   static DoordeckHeadlessSdkFlutterPlatform get instance => _instance;
 
   /// Platform-specific implementations should set this with their own
-  /// platform-specific class that extends [DoordeckHeadlessSdkFlutterPlatform] when
+  /// class that extends [DoordeckHeadlessSdkFlutterPlatform] when
   /// they register themselves.
   static set instance(DoordeckHeadlessSdkFlutterPlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
   }
 
-  /// Login with email and password
-  Future<AssistedRegisterEphemeralKeyResponse> login(
-      String email,
-      String password,
-      ) {
-    throw UnimplementedError('login() has not been implemented.');
+  /// Sets the callback for handling auth token requests from native code.
+  void setAuthTokenCallback(AuthTokenCallback callback) {
+    throw UnimplementedError('setAuthTokenCallback() has not been implemented.');
   }
 
-  /// Set the auth token
-  Future<AssistedRegisterEphemeralKeyResponse> setAuthToken(
-      String authToken,
-      ) {
-    throw UnimplementedError('setAuthToken() has not been implemented.');
+  /// Initiates the unlock flow.
+  Future<void> unlockFlow() {
+    throw UnimplementedError('unlockFlow() has not been implemented.');
   }
 
-  /// Get user details
-  Future<UserDetailsResponse> getUserDetails() {
-    throw UnimplementedError('getUserDetails() has not been implemented.');
-  }
-
-  /// Verify using the verification code
-  Future<void> verify(String code) {
-    throw UnimplementedError('verify() has not been implemented.');
-  }
-
-  /// Logout
-  Future<void> logout() {
-    throw UnimplementedError('logout() has not been implemented.');
-  }
-
-  /// Get locks belonging to a tile
-  Future<TileLocksResponse> getLocksBelongingToTile(String tileId) {
-    throw UnimplementedError('getLocksBelongingToTile() has not been implemented.');
-  }
-
-  /// Unlock device by lock ID
-  Future<void> unlockDevice(String lockId) {
-    throw UnimplementedError('unlockDevice() has not been implemented.');
+  /// Initializes the SDK with the provided authentication token.
+  Future<void> initialize({String? authToken}) {
+    throw UnimplementedError('initialize() has not been implemented.');
   }
 }
