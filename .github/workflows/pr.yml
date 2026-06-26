@@ -3,6 +3,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   flutter-version:
     name: Parse Flutter's version
