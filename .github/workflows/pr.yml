@@ -7,34 +7,18 @@ permissions:
   contents: read
 
 jobs:
-  flutter-version:
-    name: Parse Flutter's version
-    runs-on: ubuntu-latest
-    outputs:
-      flutter-version: ${{ steps.flutter-version.outputs.FLUTTER_VERSION }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Extract Flutter version
-        id: flutter-version
-        run: |
-          FLUTTER_VERSION=$(jq -r .flutter .fvmrc)
-          echo "FLUTTER_VERSION=$FLUTTER_VERSION" >> $GITHUB_OUTPUT
-
   build-android:
-    needs: [flutter-version]
     runs-on: ubuntu-latest
-    env:
-      FLUTTER_VERSION: ${{ needs.flutter-version.outputs.flutter-version }}
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Install Flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
+          flutter-version-file: .fvmrc
           channel: 'stable'
 
       - name: Analyze Dart code
@@ -54,18 +38,17 @@ jobs:
   
 
   build-ios:
-    needs: [flutter-version]
     runs-on: macos-latest
-    env:
-      FLUTTER_VERSION: ${{ needs.flutter-version.outputs.flutter-version }}
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Install Flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
+          flutter-version-file: .fvmrc
           channel: 'stable'
 
       - name: Get Flutter dependencies
